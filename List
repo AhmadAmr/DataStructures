@@ -1,0 +1,119 @@
+class MeList <T> : IEnumerable<T>
+    {
+        T[] items;
+        public MeList(int Capacity = 5)
+        {
+            items = new T[Capacity];
+        }
+        public void Add(T temp)
+        {
+            if (Count == items.Length)
+                EnsureCapacity();
+
+            items[Count++] = temp;
+        }
+        public void Insert(int index, T item)
+        { 
+            if (Count  == items.Length)
+            {
+                EnsureCapacity();
+            }
+            Array.Copy(items, index, items, index+1, Count -index);
+            items[index] = item;
+            Count++;
+        }
+        public void print()
+        {
+            for (int i = 0; i < Count; i++)
+                Console.Write(items[i]+ " ");
+        }
+        public void RemoveAt(int index)
+        {
+            Array.Copy(items, index + 1, items, index,Count-(index+1));
+            Count--;
+        }
+        public void InsertRange(int index ,IEnumerable <T> _items)
+        {
+            int target = _items.Count() + Count;
+            if (target > Count * 2)
+            {
+                Array.Resize(ref items, target);
+            }
+            else if ((target) > Count + 1 && (target) <= Count * 2)
+            {
+                Array.Resize(ref items,  Count*2);
+            }
+            int _target =_items.Count() + Count;
+            //for (int i = Count-1; i >= index ; i--)
+            //{
+            //    items[--_target] = items[i];
+            //}
+            Array.Copy(items, index, items, index+_items.Count(), Count-index);
+            foreach (T x in _items)
+            {
+                items[index++] = x;
+            }
+            Count += _items.Count();
+
+        }
+        public void AddRange(IEnumerable<T> collection)
+        {
+            InsertRange(Count, collection);
+        }
+        public void Clear()
+        {
+            Array.Clear(items, 0, Count);
+            Count = 0;
+        }
+        public void Sort()
+        {
+            Array.Sort(items,0,Count);
+        }
+        public IEnumerator<T> GetEnumerator()
+        {
+            for (int i = 0; i < Count; i++)
+                yield return items[i];
+
+        }
+        public T this[int index]
+        {
+            get
+            {
+                if (index >= this.Count)
+                {
+                    throw new ArgumentOutOfRangeException(); ;
+                }
+                return this.items[index];
+            }
+
+            set
+            {
+                if (index >= this.Count)
+                {
+                    throw new ArgumentOutOfRangeException();
+                }
+                this.items[index] = value;
+            }
+        }
+        public int Count { get; private set; }
+        public int Capacity
+        {
+            set
+            {
+                Capacity = value;
+            }
+            get { return items.Length; }
+        }
+        public void EnsureCapacity()
+        {
+           T[] temp =new T[items.Length*2];
+           for (int i = 0; i < items.Length; i++)
+               temp[i] = items[i];
+           items = temp;
+        }
+        IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+    }
